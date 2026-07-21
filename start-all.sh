@@ -15,5 +15,8 @@ cd ../inventory-service && npm run start:dev &
 echo "Starting notification-service..."
 cd ../notification-service && npm run start:dev &
 
+echo "Starting frontend..."
+cd ../ecommerce-frontend && npm run dev &
+
 echo "All services starting. Check individual logs above."
 wait
