@@ -19,6 +19,21 @@ export class ProductsService {
  async findAll() {
     return this.productModel.find().exec();
   }
+  
+  async reserveStock(productId: string, quantity: number) {
+    return this.productModel.findOneAndUpdate(
+      {
+        productId,
+        stock: { $gte: quantity },
+      },
+      {
+        $inc: { stock: -quantity },
+      },
+      {
+        new: true,
+      },
+    );
+  }
 
   findOne(id: number) {
     return `This action returns a #${id} product`;

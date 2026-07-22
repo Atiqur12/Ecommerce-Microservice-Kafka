@@ -3,16 +3,6 @@
   import OrdersList from './OrdersList';
   import './App.css'
 
-  interface OrderItem{
-    _id : string;
-    productId : string;    
-    quantity : number;
-    customerEmail : string;
-    status : string
-
-  }
-
-
   function App() {
     
     return (

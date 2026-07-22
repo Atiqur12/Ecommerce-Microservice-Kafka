@@ -9,5 +9,6 @@ import { Product, ProductSchema } from './schema/shema';
   imports: [MongooseModule.forFeature([{name: Product.name , schema: ProductSchema }]) ],
   controllers: [ProductsController],
   providers: [ProductsService],
+  exports: [ProductsService],
 })
 export class ProductsModule {}

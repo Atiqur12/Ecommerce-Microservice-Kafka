@@ -30,3 +30,47 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - kafka
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/order-service
+      KAFKA_BROKER: kafka:29092
+
+  inventory-service:
+    build: ./inventory-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - kafka
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/inventory-service
+      KAFKA_BROKER: kafka:29092
+
+  notification-service:
+    build: ./notification-service
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:29092
+
+  ecommerce-frontend:
+    build: ./ecommerce-frontend
+    ports:
+      - "5173:80"
+
+volumes:
+  mongo-data:

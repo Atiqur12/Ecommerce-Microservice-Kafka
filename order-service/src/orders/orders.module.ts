@@ -15,7 +15,7 @@ import { Order, OrderSchema } from './schema/schema';
         options: {
           client: {
             clientId: 'order-service',
-            brokers: ['localhost:9092'],
+            brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
           },
           consumer: {
             groupId: 'order-consumer',

@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface OrderFormProps {
-  onOrderCreated: () => void;
-}
 
-function OrderForm({ onOrderCreated }: OrderFormProps) {
+
+function OrderForm() {
     const navigate = useNavigate();
 
   const [productId, setProductId] = useState('');
@@ -15,19 +13,22 @@ function OrderForm({ onOrderCreated }: OrderFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await fetch('http://localhost:3000/orders', {
+    const response = await fetch('http://localhost:3000/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ productId, quantity, customerEmail }),
       
     });
+
+    if (!response.ok) {
+      alert('Failed to create order. Please try again.');
+      return;
+    }
     navigate('/orders')
 
     setProductId('');
     setQuantity(1);
     setCustomerEmail('');
-
-    onOrderCreated();
   };
 
   return (

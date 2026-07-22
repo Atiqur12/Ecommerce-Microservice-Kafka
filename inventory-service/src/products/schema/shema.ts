@@ -5,7 +5,8 @@ export type ProductDocument = Product & Document;
 
 @Schema({ timestamps: true })
 export class Product {
-  @Prop({ required: true })
+  
+  @Prop({ required: true, unique: true, index: true })
   productId: string;
 
   @Prop({ required: true, type: Number })
