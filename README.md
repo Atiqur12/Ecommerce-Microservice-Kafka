@@ -1,23 +1,28 @@
 ## Services
 
-- **order-service** — REST API for customers. Accepts POST /orders, saves the order to MongoDB, publishes an order-created event to Kafka.
+- **order-service** (port 3000) — REST API for customers. Accepts `POST /orders`, saves the order as `pending`, and publishes an `order-created` event to Kafka. Also consumes `stock-reserved`/`stock-unavailable` events to update the order's final status to `confirmed` or `failed`.
 
-- **inventory-service** — A hybrid app: exposes REST endpoints (POST /products) for admin stock management, and independently consumes order-created events, checking and decrementing real stock, then publishing stock-reserved or stock-unavailable.
+- **inventory-service** (port 3001) — A hybrid app: exposes REST endpoints (`/products`) for admin stock management with full CRUD, and independently consumes `order-created` events. Uses an atomic MongoDB `findOneAndUpdate` to check and decrement stock in a single operation, preventing race conditions on concurrent orders. Publishes `stock-reserved` or `stock-unavailable` depending on outcome.
 
-- **notification-service** — Consumes both outcome topics and logs a simulated customer notification.
+- **notification-service** — Pure Kafka consumer, no REST endpoints. Consumes both outcome topics and logs a simulated customer notification.
+
+- **ecommerce-frontend** (port 5173) — React + TypeScript UI with client-side routing.
 
 ## Tech Stack
 
-NestJS, TypeScript, Apache Kafka + Zookeeper (Docker Compose), MongoDB, Kafka UI.
+NestJS, TypeScript, Apache Kafka + Zookeeper, MongoDB, Docker Compose, Kafka UI, React + Vite.
 
 ## Setup
 
+Requires Docker Desktop running.
+
 ```bash
-docker-compose up -d
-cd order-service && npm install && npm run start:dev
-cd inventory-service && npm install && npm run start:dev
-cd notification-service && npm install && npm run start:dev
+docker compose up --build
 ```
 
-Kafka UI available at http://localhost:8085
-EOF
+This single command builds and starts everything — Kafka, Zookeeper, Kafka UI, MongoDB, and all four application services — with health checks ensuring dependent services wait for Kafka/MongoDB to be genuinely ready before starting.
+
+- Frontend: `http://localhost:5173`
+- Order API: `http://localhost:3000`
+- Inventory/Product API: `http://localhost:3001`
+- Kafka UI: `http://localhost:8085`
