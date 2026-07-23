@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Product , ProductDocument} from './schema/shema';
 import { Model } from 'mongoose';
 
@@ -34,16 +34,27 @@ export class ProductsService {
       },
     );
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    const product = await this.productModel.findById(id).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
   }
-
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    const product = await this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true }).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
+  
+  async remove(id: string) {
+    const product = await this.productModel.findByIdAndDelete(id).exec();
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
+}
 }
