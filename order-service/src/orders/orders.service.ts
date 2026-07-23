@@ -45,6 +45,10 @@ export class OrdersService {
     return exist;
   }
 
+  async updateStatus(orderId: string, status: string) {
+    return this.orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+  }
+
   async remove(id: string) {
     const exist = await this.orderModel.findByIdAndDelete(id).exec()
 
